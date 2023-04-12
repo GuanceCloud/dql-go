@@ -125,10 +125,11 @@ func WithSLimit(n int) DQLOption {
 }
 
 // WithTimeRange used to set time range of the DQL query.
-func WithTimeRange(rng [2]int) DQLOption {
+// start and end are UNIX timestamp in ms.
+func WithTimeRange(start, end int) DQLOption {
 	return func(q *dql) {
-		q.TimeRange = append(q.TimeRange, rng[0])
-		q.TimeRange = append(q.TimeRange, rng[1])
+		q.TimeRange = append(q.TimeRange, start)
+		q.TimeRange = append(q.TimeRange, end)
 	}
 }
 

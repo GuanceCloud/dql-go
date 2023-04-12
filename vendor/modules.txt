@@ -1,10 +1,6 @@
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/influxdata/influxdb1-client v0.0.0-20220302092344-a9ab5670611c
-## explicit
-github.com/influxdata/influxdb1-client/models
-github.com/influxdata/influxdb1-client/pkg/escape
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib

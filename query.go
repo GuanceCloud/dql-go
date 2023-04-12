@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/influxdata/influxdb1-client/models"
 )
 
 type query struct {
@@ -22,12 +20,12 @@ type Client struct {
 }
 
 // NewClient create a datakit client with IP:Port.
+// For example, local default Datakit host is localhost:9529.
 func NewClient(dk string) *Client {
 	c := &Client{
 		dk: dk,
 	}
 
-	// TODO: new http client
 	c.cli = &http.Client{}
 
 	return c
@@ -44,9 +42,18 @@ type Result struct {
 
 // A DQLResult is a single DQL's query result.
 type DQLResult struct {
-	Series   []*models.Row `json:"series"`
-	RawQuery string        `json:"raw_query,omitempty"`
-	Cost     string        `json:"cost"`
+	Series   []*Row `json:"series"`
+	RawQuery string `json:"raw_query,omitempty"`
+	Cost     string `json:"cost"`
+}
+
+// Row represents a single row returned from the execution of a statement.
+type Row struct {
+	Name    string            `json:"name,omitempty"`
+	Tags    map[string]string `json:"tags,omitempty"`
+	Columns []string          `json:"columns,omitempty"`
+	Values  [][]interface{}   `json:"values,omitempty"`
+	Partial bool              `json:"partial,omitempty"`
 }
 
 // Query send one or more DQL query to Datakit. We can build
