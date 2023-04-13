@@ -5,10 +5,10 @@
 
 package dql
 
-// A OrderByOrder is the order-by option, DESC or ASC
+// A OrderByOrder is the order-by option, DESC or ASC.
 type OrderByOrder int
 
-// String() is the string-representation of DESC and ASC
+// String() is the string-representation of DESC and ASC.
 func (o OrderByOrder) String() string {
 	switch o {
 	case ASC:
@@ -19,8 +19,10 @@ func (o OrderByOrder) String() string {
 	return ""
 }
 
-// The order-by options: asc and desc
+// The order-by options: asc and desc.
 const (
 	ASC OrderByOrder = iota
 	DESC
 )
+
+type OrderBy map[string]string

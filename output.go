@@ -15,6 +15,7 @@ const (
 
 // String used to get the output format in string representation.
 func (of OutputFormat) String() string {
+	//nolint:gocritic
 	switch of {
 	case LineProtocol:
 		return "lineprotocol"
