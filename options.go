@@ -10,6 +10,25 @@ import "time"
 // DQLOption used to set various DQL options.
 type DQLOption func(*dql)
 
+// WithProfile enable profile on query.
+func WithProfile(on bool) DQLOption {
+	return func(q *dql) {
+		q.Profile = on
+	}
+}
+
+// WithOptimized enable optimize on query.
+// For example, if query 7 days data, the query will only response
+// the first index data. If order by ASC, the first index is the
+// oldest index.
+//
+// NOTE: not available on M::.
+func WithOptimized(on bool) DQLOption {
+	return func(q *dql) {
+		q.Optimized = on
+	}
+}
+
 // WithConditions set extra where-condtions to DQL.
 func WithConditions(conditions string) DQLOption {
 	return func(q *dql) {
@@ -45,8 +64,22 @@ func WithAsyncTimeout(du time.Duration) DQLOption {
 	}
 }
 
+// WithAsyncID fetch async query result on the id.
+func WithAsyncID(id string) DQLOption {
+	return func(q *dql) {
+		q.AsyncID = id
+	}
+}
+
+// WithTimeout set query timeout.
+func WithTimeout(du time.Duration) DQLOption {
+	return func(q *dql) {
+		q.Timeout = du.String()
+	}
+}
+
 // WithShowLabel will show-label in query result.
-// NOTE: Only available on query Object(O::)
+// NOTE: Only available on query Object(O::).
 func WithShowLabel(on bool) DQLOption {
 	return func(q *dql) {
 		q.ShowLabel = on
@@ -54,6 +87,12 @@ func WithShowLabel(on bool) DQLOption {
 }
 
 // WithDisableExpensiveQuery disable/enable expensive query.
+// For left wildcard like following will trigger a expensive query.
+//
+//   L::some_source { f1 = wildcard('*xx') }
+//
+// NOTE: Disable all expensive query are a good manner to protect
+// your worksapce.
 func WithDisableExpensiveQuery(on bool) DQLOption {
 	return func(q *dql) {
 		q.DisableExpensiveQuery = on
@@ -89,14 +128,29 @@ func WithDisableQueryParse(on bool) DQLOption {
 }
 
 // WithMaxDuration set DQL max time range, this option used
-// to avoid unexpected too-large query.
+// to avoid unexpected too-large query. If time range in DQL
+// exceed max duration, there will be a query error returned.
+// For example, following DQL will fail if max duration set to
+// 1 hour:
+//
+//   L::some_source [1d:] # query latest 24h logging
+//
+// We will get a error like:
+//
+//   parse error: time range should less than 1h0m0s
 func WithMaxDuration(du time.Duration) DQLOption {
 	return func(q *dql) {
 		q.MaxDuration = du.String()
 	}
 }
 
-// WithMaxPoint used to control max query points.
+// WithMaxPoint used to control max query points under
+// group by, for example:
+//
+//   L::re(`.*`):(fill(count(__docid), 0) AS count) [1d] BY status
+//
+// All logs are group by its status, each status(bucket) may have different
+// number of logs, and we can limit only n points in each status.
 func WithMaxPoint(n int) DQLOption {
 	return func(q *dql) {
 		q.MaxPoint = n
@@ -136,18 +190,16 @@ func WithTimeRange(start, end int) DQLOption {
 // WithSearchAfter used to set search-after of the DQL query.
 func WithSearchAfter(after ...any) DQLOption {
 	return func(q *dql) {
-		q.SearchAfter = after
+		if len(after) > 0 {
+			q.SearchAfter = append(q.SearchAfter, after...)
+		}
 	}
 }
 
 // WithOrderBy used to set order-by of the DQL query.
 func WithOrderBy(k string, order OrderByOrder) DQLOption {
 	return func(q *dql) {
-		if q.OrderBy == nil {
-			q.OrderBy = map[string]string{}
-		}
-
-		q.OrderBy[k] = order.String()
+		q.OrderBy = append(q.OrderBy, OrderBy(map[string]string{k: order.String()}))
 	}
 }
 
@@ -165,5 +217,20 @@ func WithEchoExplain(on bool) QueryOption {
 func WithQueries(arr ...*dql) QueryOption {
 	return func(q *query) {
 		q.Queries = append(q.Queries, arr...)
+	}
+}
+
+// WithToken enable we send the query to Dataway directly.
+func WithToken(token string) QueryOption {
+	return func(q *query) {
+		q.Token = token
+	}
+}
+
+// WithHTTPS are required if we want to send the query
+// to public openway.
+func WithHTTPS(on bool) QueryOption {
+	return func(q *query) {
+		q.https = on
 	}
 }

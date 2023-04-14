@@ -1,7 +1,5 @@
 # DQL Golang SDK
 
-English | [简体中文](README_cn.md)
-
 <h1 align="center">DQL Go SDK</h1>
 
 [![GoDoc](https://godoc.org/github.com/GuanceCloud/dql-go?status.svg)](https://godoc.org/github.com/GuanceCloud/dql-go)
@@ -23,4 +21,4 @@ import _ "github.com/GuanceCloud/dql-go"
 
 ## Examples
 
-See simple examples under *examples* path.
+See simple examples under *examples* directory or find examples in *query_test.go*.

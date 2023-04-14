@@ -19,7 +19,10 @@ func MustBuildDQL(dql string, opts ...DQLOption) *dql {
 // BuildDQL used to build a DQL query with one or more options.
 // dqlStr is the basic DQL query string.
 func BuildDQL(dqlStr string, opts ...DQLOption) (*dql, error) {
-	q := &dql{DQL: dqlStr}
+	q := &dql{
+		DQL:         dqlStr,
+		SearchAfter: []any{}, // default enable search-after
+	}
 
 	for _, opt := range opts {
 		if opt != nil {
