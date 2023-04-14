@@ -147,7 +147,10 @@ func WithMaxDuration(du time.Duration) DQLOption {
 // WithMaxPoint used to control max query points under
 // group by, for example:
 //
-//   L::some_source BY status
+//   L::re(`.*`):(fill(count(__docid), 0) AS count) [1d] BY status
+//
+// All logs are group by its status, each status(bucket) may have different
+// number of logs, and we can limit only n points in each status.
 func WithMaxPoint(n int) DQLOption {
 	return func(q *dql) {
 		q.MaxPoint = n

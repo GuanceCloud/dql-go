@@ -26,18 +26,20 @@ func TestQueryDataway(t *T.T) {
 	c := NewClient("openway.guance.com")
 
 	t.Run("with-max-point", func(t *T.T) {
-
 		start := time.Now()
 		r, err := c.Query(
 			WithEchoExplain(true),
 			WithHTTPS(true),
 			WithToken(token),
 			WithQueries(
-				MustBuildDQL("L::re(`.*`):(fill(count(__docid), 0) AS count) [1d] BY name"))) //WithMaxPoint(10),
-		//
+				MustBuildDQL("L::re(`.*`):(fill(count(__docid), 0) AS count) [1d] BY status",
+					WithMaxPoint(2))))
 
-		//j, err := json.MarshalIndent(r, "", "  ")
-		//assert.NoError(t, err)
+		assert.NoError(t, err)
+
+		j, err := json.MarshalIndent(r, "", "  ")
+		assert.NoError(t, err)
+		t.Logf("resp:\n%s", string(j))
 
 		assert.NoError(t, err)
 
@@ -52,10 +54,8 @@ func TestQueryDataway(t *T.T) {
 			t.Logf("pts: %d", len(s.Values))
 		}
 	})
-	return
 
 	t.Run("with-max-duration", func(t *T.T) {
-
 		start := time.Now()
 		r, err := c.Query(
 			WithEchoExplain(true),
@@ -65,6 +65,8 @@ func TestQueryDataway(t *T.T) {
 				MustBuildDQL("L::testing_module:(f1,f2) [30d:]",
 					WithMaxDuration(time.Hour),
 				)))
+
+		assert.NoError(t, err)
 
 		j, err := json.MarshalIndent(r, "", "  ")
 		assert.NoError(t, err)
@@ -81,7 +83,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("disable-multi-field", func(t *T.T) {
-
 		start := time.Now()
 		r, err := c.Query(
 			WithEchoExplain(true),
@@ -91,6 +92,8 @@ func TestQueryDataway(t *T.T) {
 				MustBuildDQL("L::testing_module:(f1,f2) limit 1",
 					WithDisableMultipleField(true),
 				)))
+
+		assert.NoError(t, err)
 
 		j, err := json.MarshalIndent(r, "", "  ")
 		assert.NoError(t, err)
@@ -107,7 +110,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("with-time-range", func(t *T.T) {
-
 		start := time.Now()
 		r, err := c.Query(
 			WithEchoExplain(true),
@@ -129,7 +131,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("disalbe-expensive-query", func(t *T.T) {
-
 		start := time.Now()
 		r, err := c.Query(
 			WithEchoExplain(true),
@@ -151,7 +152,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("order-by", func(t *T.T) {
-
 		start := time.Now()
 		r, err := c.Query(
 			WithEchoExplain(true),
@@ -210,7 +210,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("logging-searching-aster", func(t *T.T) {
-
 		sa := []any{}
 		for i := 0; i < 3; i++ {
 			r, err := c.Query(
@@ -236,7 +235,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("logging-profile", func(t *T.T) {
-
 		r, err := c.Query(
 			WithEchoExplain(true),
 			WithHTTPS(true),
@@ -255,7 +253,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("logging-optimized", func(t *T.T) {
-
 		r, err := c.Query(
 			WithEchoExplain(true),
 			WithHTTPS(true),
@@ -272,7 +269,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("logging-condition", func(t *T.T) {
-
 		r, err := c.Query(
 			WithEchoExplain(true),
 			WithHTTPS(true),
@@ -291,7 +287,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("logging-output-lineprotocol", func(t *T.T) {
-
 		r, err := c.Query(
 			WithEchoExplain(true),
 			WithHTTPS(true),
@@ -322,7 +317,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("logging-with-timeout", func(t *T.T) {
-
 		start := time.Now()
 		r, err := c.Query(
 			WithEchoExplain(true),
@@ -355,7 +349,6 @@ func TestQueryDataway(t *T.T) {
 	})
 
 	t.Run("logging-async", func(t *T.T) {
-
 		start := time.Now()
 		r, err := c.Query(
 			WithEchoExplain(true),
@@ -384,6 +377,7 @@ func TestQueryDataway(t *T.T) {
 			WithQueries(
 				MustBuildDQL("L::testing_module limit 10000", WithAsyncID(asyncID)),
 			))
+		assert.NoError(t, err)
 
 		t.Logf("request:\n%s\n---\nresult: %d, cost: %s, client-cost: %s",
 			c.lastQuery.json(true),
