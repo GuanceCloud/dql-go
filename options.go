@@ -203,6 +203,13 @@ func WithOrderBy(k string, order OrderByOrder) DQLOption {
 	}
 }
 
+// WithSampling used to enable/disable sampling of the query result.
+func WithSampling(on bool) QueryOption {
+	return func(q *dql) {
+		q.DisableSampling = !on
+	}
+}
+
 // QueryOption used to set various query options.
 type QueryOption func(*query)
 

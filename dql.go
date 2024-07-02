@@ -34,4 +34,29 @@ type dql struct {
 	MaskVisible           bool `json:"mask_visible,omitempty"`
 	Profile               bool `json:"is_profile,omitempty"`
 	Optimized             bool `json:"is_optimized,omitempty"`
+	DisableSampling       bool `json:"disable_sampling,omitempty"`
+
+	// TODO: following args not support
+	//AlignTime            bool                   `json:"align_time"`  // guancedb自动对齐
+	//CursorTime           int64                  `json:"cursor_time"` // doris分段查询阀值
+	//Date                 string                 `json:"date"`
+	//DisallowLargeQuery   bool                   `json:"disallow_large_query"`   // doris 使用耗时查询
+	//EnableExpensiveQuery bool                   `json:"enable_expensive_query"` // use expensive query, default false, can not use
+	//IndexList            []*WorkspaceIndexRule  `json:"index_list,omitempty"`   // 跨空间查询条件
+	//Indices              []*DorisIndices        `json:"indices,omitempty"`      // 传递给doris的跨空间查询条件
+	//Interval             int64                  `json:"interval"`
+	//IsOptimized          bool                   `json:"is_optimized"` // search really indicies
+	//IsProfile            bool                   `json:"is_profile"`   // profile search
+	//Label                bool                   `json:"show_label"`   // 是否展示labels
+	//Limit                int64                  `json:"limit"`
+	//MaxScanSize          int64                  `json:"max_scan_size"` // scan completed
+	//NOrderBy             []map[string]string    `json:"order_by"`
+	//NSOrderBy            []map[string]string    `json:"sorder_by"`
+	//QType                string                 `json:"qtype"` // dql or promql
+	//Rules                map[string][]QueryRule `json:"rules"` // rules
+	//SOrderBy             []map[string]string    `json:"sorderby"`
+	//ScanCompleted        bool                   `json:"scan_completed"` // scan completed
+	//ScanIndex            string                 `json:"scan_index"`     // scan index
+	//SearchTimeout        string                 `json:"search_timeout"` // 最大执行时间
+	//Timezone             string                 `json:"tz"`
 }
