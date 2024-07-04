@@ -33,7 +33,6 @@ type dql struct {
 	NOrderBy    []map[string]string   `json:"order_by"`  // the newer order-by
 	NSOrderBy   []map[string]string   `json:"sorder_by"` // the newer sorder-by
 	IndexList   []*WorkspaceIndexRule `json:"index_list,omitempty"`
-	Indices     []*DorisIndices       `json:"indices,omitempty"`
 
 	Conditions   string `json:"conditions,omitempty"`
 	DQL          string `json:"query"`

@@ -294,13 +294,17 @@ func WithRoleRules(rules map[string][]QueryRule) DQLOption {
 	}
 }
 
-func WithMultipleIndices(idx ...*DorisIndices) DQLOption {
-	return func(q *dql) {
-		q.Indices = append(q.Indices, idx...)
-	}
-}
-
 // WithMultipleWorkspaceRules query among multiple workspaces.
+//
+// Workspace rules example:
+//
+//	rules := []*WorkspaceIndexRule{
+//		&WorkspaceIndexRule{
+//			WorkspaceUUID: "wksp_4b57c7bab38e4a2d9630xxxxxxxxxxxx",
+//			IndexName:     "default",
+//			Rules:         any{}, // See rules in WithRoleRules
+//		},
+//	}
 func WithMultipleWorkspaceRules(rules ...*WorkspaceIndexRule) DQLOption {
 	return func(q *dql) {
 		q.IndexList = append(q.IndexList, rules...)
