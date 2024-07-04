@@ -10,7 +10,7 @@ import "time"
 // DQLOption used to set various DQL options.
 type DQLOption func(*dql)
 
-// WithProfile enable profile on query.
+// WithProfile enable profiling. Only available for OpenSearch backend.
 func WithProfile(on bool) DQLOption {
 	return func(q *dql) {
 		q.Profile = on
@@ -80,22 +80,26 @@ func WithTimeout(du time.Duration) DQLOption {
 
 // WithShowLabel will show-label in query result.
 // NOTE: Only available on query Object(O::).
+//
+// Deprecated: this option is dropped.
 func WithShowLabel(on bool) DQLOption {
 	return func(q *dql) {
-		q.ShowLabel = on
+		q.ShowLabelDeprecated = on
 	}
 }
 
 // WithDisableExpensiveQuery disable/enable expensive query.
 // For left wildcard like following will trigger a expensive query.
 //
-//   L::some_source { f1 = wildcard('*xx') }
+//	L::some_source { f1 = wildcard('*xx') }
 //
 // NOTE: Disable all expensive query are a good manner to protect
 // your worksapce.
+//
+// Deprecated: Option removed for DQL.
 func WithDisableExpensiveQuery(on bool) DQLOption {
 	return func(q *dql) {
-		q.DisableExpensiveQuery = on
+		q.DisableExpensiveQueryDeprecated = on
 	}
 }
 
@@ -133,11 +137,11 @@ func WithDisableQueryParse(on bool) DQLOption {
 // For example, following DQL will fail if max duration set to
 // 1 hour:
 //
-//   L::some_source [1d:] # query latest 24h logging
+//	L::some_source [1d:] # query latest 24h logging
 //
 // We will get a error like:
 //
-//   parse error: time range should less than 1h0m0s
+//	parse error: time range should less than 1h0m0s
 func WithMaxDuration(du time.Duration) DQLOption {
 	return func(q *dql) {
 		q.MaxDuration = du.String()
@@ -147,7 +151,7 @@ func WithMaxDuration(du time.Duration) DQLOption {
 // WithMaxPoint used to control max query points under
 // group by, for example:
 //
-//   L::re(`.*`):(fill(count(__docid), 0) AS count) [1d] BY status
+//	L::re(`.*`):(fill(count(__docid), 0) AS count) [1d] BY status
 //
 // All logs are group by its status, each status(bucket) may have different
 // number of logs, and we can limit only n points in each status.
@@ -196,17 +200,110 @@ func WithSearchAfter(after ...any) DQLOption {
 	}
 }
 
-// WithOrderBy used to set order-by of the DQL query.
+// WithOrderBy used to set order-by on point.
 func WithOrderBy(k string, order OrderByOrder) DQLOption {
 	return func(q *dql) {
-		q.OrderBy = append(q.OrderBy, OrderBy(map[string]string{k: order.String()}))
+		q.OrderBy = append(q.OrderBy, orderBy(map[string]string{k: order.String()}))
+		q.NOrderBy = append(q.NOrderBy, orderBy(map[string]string{k: order.String()}))
+	}
+}
+
+// WithSOrderBy used to set order-by on series.
+func WithSOrderBy(k string, order OrderByOrder) DQLOption {
+	return func(q *dql) {
+		q.NSOrderBy = append(q.NSOrderBy, orderBy(map[string]string{k: order.String()}))
 	}
 }
 
 // WithSampling used to enable/disable sampling of the query result.
-func WithSampling(on bool) QueryOption {
+func WithSampling(on bool) DQLOption {
 	return func(q *dql) {
 		q.DisableSampling = !on
+	}
+}
+
+// WithQueryType set query type, only "dql" or "promql" are allowed.
+func WithQueryType(t string) DQLOption {
+	return func(q *dql) {
+		switch t {
+		case "dql", "promql":
+			q.QType = t
+		default: // pass
+		}
+	}
+}
+
+// WithAlignTime enable time alignment for query result.
+func WithAlignTime(on bool) DQLOption {
+	return func(q *dql) {
+		q.AlignTime = on
+	}
+}
+
+// WithLargeQuery enable/disable large-data-set query. Large-data-set query default
+// enabled, but we can disable it to protect backend storage.
+func WithLargeQuery(on bool) DQLOption {
+	return func(q *dql) {
+		q.DisallowLargeQuery = !on
+	}
+}
+
+// WithCursorTime set cursort timestamp for paging. The timestamp n can be s/ms/us,
+// and the backend will guess the unit of the timestamp.
+func WithCursorTime(n int64) DQLOption {
+	return func(q *dql) {
+		if n > 0 {
+			q.CursorTime = n
+		}
+	}
+}
+
+// WithStepInterval set time step interval for time-aggregate query.
+func WithStepInterval(n int64) DQLOption {
+	return func(q *dql) {
+		if n > 0 {
+			q.Interval = n
+		}
+	}
+}
+
+// WithLimit set max returned point's. Default is 1000.
+func WithLimit(n int64) DQLOption {
+	return func(q *dql) {
+		if n > 0 {
+			q.Limit = n
+		}
+	}
+}
+
+// WithRoleRules set role rules for the query.
+//
+// Rules example:
+//
+//	rules := map[string][]QueryRule{
+//		"logging": []QueryRule{ // rule for query logging(aka L::) data.
+//		QueryRule{
+//				Rule:  `fruit IN ['apple', 'orange']`,
+//				Index: []string{"my-logging-index-name"},
+//			},
+//		},
+//	}
+func WithRoleRules(rules map[string][]QueryRule) DQLOption {
+	return func(q *dql) {
+		q.Rules = rules
+	}
+}
+
+func WithMultipleIndices(idx ...*DorisIndices) DQLOption {
+	return func(q *dql) {
+		q.Indices = append(q.Indices, idx...)
+	}
+}
+
+// WithMultipleWorkspaceRules query among multiple workspaces.
+func WithMultipleWorkspaceRules(rules ...*WorkspaceIndexRule) DQLOption {
+	return func(q *dql) {
+		q.IndexList = append(q.IndexList, rules...)
 	}
 }
 

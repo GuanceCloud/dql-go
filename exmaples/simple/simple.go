@@ -19,7 +19,6 @@ func main() {
 	r, err := c.Query(dql.WithQueries(
 		dql.MustBuildDQL("M::cpu LIMIT 1",
 			dql.WithTimeout(time.Second*30))))
-
 	if err != nil {
 		panic(err.Error())
 	}
