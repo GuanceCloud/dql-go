@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestQueryDataway(t *T.T) {
@@ -121,6 +122,7 @@ func TestQueryDataway(t *T.T) {
 				)))
 
 		assert.NoError(t, err)
+		require.NotEmpty(t, r.Content[0].Series)
 
 		t.Logf("request:\n%s\n---\nresult: %d, cost: %s, client-cost: %s",
 			c.lastQuery.json(true),
@@ -142,6 +144,7 @@ func TestQueryDataway(t *T.T) {
 				)))
 
 		assert.NoError(t, err)
+		require.NotEmpty(t, r.Content[0].Series)
 
 		t.Logf("request:\n%s\n---\nresult: %d, cost: %s, client-cost: %s",
 			c.lastQuery.json(true),
@@ -168,6 +171,8 @@ func TestQueryDataway(t *T.T) {
 		assert.NoError(t, err)
 
 		t.Logf("result:\n%s", string(j))
+
+		require.NotEmpty(t, r.Content[0].Series)
 
 		t.Logf("request:\n%s\n---\nresult: %d, cost: %s, client-cost: %s",
 			c.lastQuery.json(true),
@@ -339,6 +344,7 @@ func TestQueryDataway(t *T.T) {
 		}
 
 		assert.NotEmpty(t, r.Content)
+		require.NotEmpty(t, r.Content[0].Series)
 
 		t.Logf("request:\n%s\n---\nresult: %d, cost: %s, client-cost: %s",
 			c.lastQuery.json(true),
@@ -361,6 +367,7 @@ func TestQueryDataway(t *T.T) {
 
 		asyncID := r.Content[0].AsyncID
 		assert.NotEmpty(t, asyncID)
+		require.NotEmpty(t, r.Content[0].Series)
 
 		t.Logf("request:\n%s\n---\nresult: %d, cost: %s, client-cost: %s",
 			c.lastQuery.json(true),
@@ -378,6 +385,7 @@ func TestQueryDataway(t *T.T) {
 				MustBuildDQL("L::testing_module limit 10000", WithAsyncID(asyncID)),
 			))
 		assert.NoError(t, err)
+		require.NotEmpty(t, r.Content[0].Series)
 
 		t.Logf("request:\n%s\n---\nresult: %d, cost: %s, client-cost: %s",
 			c.lastQuery.json(true),
@@ -455,6 +463,7 @@ func TestQuery(t *T.T) {
 			)
 
 			assert.NoError(t, err)
+			require.NotEmpty(t, r.Content[0].Series)
 			t.Logf("get %d", len(r.Content[0].Series[0].Values))
 		}
 	})

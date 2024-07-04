@@ -8,7 +8,7 @@ package dql
 // A OrderByOrder is the order-by option, DESC or ASC.
 type OrderByOrder int
 
-// String() is the string-representation of DESC and ASC.
+// String is the string-representation of DESC and ASC.
 func (o OrderByOrder) String() string {
 	switch o {
 	case ASC:
@@ -25,4 +25,4 @@ const (
 	DESC
 )
 
-type OrderBy map[string]string
+type orderBy map[string]string
