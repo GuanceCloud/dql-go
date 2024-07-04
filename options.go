@@ -157,7 +157,9 @@ func WithMaxDuration(du time.Duration) DQLOption {
 // number of logs, and we can limit only n points in each status.
 func WithMaxPoint(n int) DQLOption {
 	return func(q *dql) {
-		q.MaxPoint = n
+		if n > 0 {
+			q.MaxPoint = n
+		}
 	}
 }
 
